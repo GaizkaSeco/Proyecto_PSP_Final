@@ -8,13 +8,11 @@ import java.net.*;
 public class HiloServer extends Thread{
     ServerSocket server;
     JTextArea textArea;
-    MulticastSocket ms;
     boolean activo;
 
-    public HiloServer(ServerSocket server, JTextArea textArea, MulticastSocket ms, boolean activo) {
+    public HiloServer(ServerSocket server, JTextArea textArea, boolean activo) {
         this.server = server;
         this.textArea = textArea;
-        this.ms = ms;
         this.activo = activo;
     }
 

@@ -38,7 +38,20 @@
     "project.structure.side.proportion": "0.0"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.Cliente">
+    <configuration name="Cliente" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="clases.Cliente" />
+      <module name="Proyecto_PSP_Final" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="clases.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Servidor" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="clases.Servidor" />
       <module name="Proyecto_PSP_Final" />
@@ -48,6 +61,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Cliente" />
         <item itemvalue="Application.Servidor" />
       </list>
     </recent_temporary>
@@ -60,7 +74,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1669750936336</updated>
-      <workItem from="1669750937641" duration="2122000" />
+      <workItem from="1669750937641" duration="3602000" />
     </task>
     <servers />
   </component>

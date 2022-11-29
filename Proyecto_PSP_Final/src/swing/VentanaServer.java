@@ -16,7 +16,6 @@ public class VentanaServer extends JFrame {
     private JButton botonDetener;
     private JTextArea textArea1;
     private ServerSocket server;
-    private MulticastSocket ms;
     private boolean activo = true;
 
     public VentanaServer() throws HeadlessException {
@@ -28,8 +27,7 @@ public class VentanaServer extends JFrame {
                     //iniciamos el servicio de escucha del servidor
                     server = new ServerSocket(5050);
                     textArea1.append("--Servidor Iniciado--");
-                    ms = new MulticastSocket();
-                    HiloServer hilo = new HiloServer(server, textArea1, ms, activo);
+                    HiloServer hilo = new HiloServer(server, textArea1, activo);
                     hilo.start();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -39,7 +37,8 @@ public class VentanaServer extends JFrame {
         botonDetener.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                activo = false;
+                dispose();
             }
         });
     }
