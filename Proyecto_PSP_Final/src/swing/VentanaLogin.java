@@ -2,14 +2,15 @@ package swing;
 
 import clases.Login;
 
+import javax.crypto.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 public class VentanaLogin extends JFrame {
     private JButton button1;
@@ -19,6 +20,7 @@ public class VentanaLogin extends JFrame {
     private JTextField usuarioField;
     private int PUERTO = 5050;
     private String HOST = "localhost";
+    private Cipher desCipher;
 
     public VentanaLogin() {
         setContentPane(panel);
@@ -29,12 +31,34 @@ public class VentanaLogin extends JFrame {
                     try {
                         //le hacemos una peticion al servidor mandandole los datos del mensage y cerramos conexion
                         Socket socket = new Socket(HOST, PUERTO);
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        ObjectOutputStream oosbytes = new ObjectOutputStream(bos);
+                        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                        //creamos un objeto con todos los datos del inicio de sesion
                         Login login = new Login(usuarioField.getText(), contrasenaField.getText());
-                        ObjectOutputStream datos = new ObjectOutputStream(socket.getOutputStream());
-                        datos.writeObject(login);
-                        ObjectInputStream res = new ObjectInputStream(socket.getInputStream());
-                        login = (Login) res.readObject();
-                        if(login.isAcierto()) {
+                        //lo comvertimos a bytes
+                        oosbytes.writeObject(login);
+                        oosbytes.flush();
+                        byte[] loginbytes = bos.toByteArray();
+                        //recogemos la clave
+                        SecretKey key = (SecretKey) ois.readObject();
+                        desCipher = Cipher.getInstance("DES");
+                        //configuramos modo descifrar
+                        desCipher.init(Cipher.ENCRYPT_MODE, key);
+                        byte[] loginCifrado = desCipher.doFinal(loginbytes);
+                        //enviamos objeto cifrado
+                        oos.writeObject(loginCifrado);
+                        //recogemos login
+                        desCipher.init(Cipher.DECRYPT_MODE, key);
+                        loginCifrado = (byte[]) ois.readObject();
+                        System.out.println("h");
+                        loginbytes = desCipher.doFinal(loginCifrado);
+
+                        ByteArrayInputStream bis = new ByteArrayInputStream(loginbytes);
+                        ObjectInputStream oisbytes = new ObjectInputStream(bis);
+                        login = (Login) oisbytes.readObject();
+                        if (login.isAcierto()) {
                             JFrame frame = new VentanaMenuPrincipal();
                             frame.setSize(300, 300);
                             frame.setVisible(true);
@@ -44,6 +68,16 @@ public class VentanaLogin extends JFrame {
                         }
                     } catch (IOException | ClassNotFoundException ex) {
                         JOptionPane.showMessageDialog(null, "Ha surgido un error con el servidor intentalo mas tarde.");
+                    } catch (NoSuchPaddingException ex) {
+                        throw new RuntimeException(ex);
+                    } catch (NoSuchAlgorithmException ex) {
+                        throw new RuntimeException(ex);
+                    } catch (InvalidKeyException ex) {
+                        throw new RuntimeException(ex);
+                    } catch (IllegalBlockSizeException ex) {
+                        throw new RuntimeException(ex);
+                    } catch (BadPaddingException ex) {
+                        throw new RuntimeException(ex);
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "ERROR tienes que rellenar todos los campos.");

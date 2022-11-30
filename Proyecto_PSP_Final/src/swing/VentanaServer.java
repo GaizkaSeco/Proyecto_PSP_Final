@@ -1,13 +1,12 @@
 package swing;
 
-import clases.HiloServer;
+import clases.HiloEscucha;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.MulticastSocket;
 import java.net.ServerSocket;
 
 public class VentanaServer extends JFrame {
@@ -27,7 +26,7 @@ public class VentanaServer extends JFrame {
                     //iniciamos el servicio de escucha del servidor
                     server = new ServerSocket(5050);
                     textArea1.append("--Servidor Iniciado--");
-                    HiloServer hilo = new HiloServer(server, textArea1, activo);
+                    HiloEscucha hilo = new HiloEscucha(server, textArea1, activo);
                     hilo.start();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);

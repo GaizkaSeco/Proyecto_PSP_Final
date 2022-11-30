@@ -1,9 +1,11 @@
 package clases;
 
-public class Login {
+import java.io.Serializable;
+
+public class Login implements Serializable {
     private String usuario;
     private String contrasena;
-    private boolean acierto;
+    private boolean acierto = false;
 
     public Login(String usuario, String contrasena) {
         this.usuario = usuario;
