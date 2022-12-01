@@ -133,13 +133,21 @@ public class HiloTrabajo extends Thread {
                 int opcion = (int) ois.readObject();
                 switch (opcion) {
                     case 1:
-                        textArea.append(user.getUsuario() + ": esta accediendo a sus cuentas.\n");
+                        textArea.append(user.getUsuario() + " esta accediendo a sus cuentas.\n");
                         cuentas();
                         break;
                     case 2:
+                        textArea.append(user.getUsuario() + " esta accediendo a crear una nueva cuenta.\n");
+                        nuevaCuenta();
+                        break;
+                    case 3:
+                        textArea.append(user.getUsuario() + " esta accediendo a hacer una transferencia.\n");
+                        break;
+                    case 4:
+                        textArea.append(user.getUsuario() + " esta accediendo a sus movimientos.\n");
                         break;
                     default:
-                        textArea.append(user.getUsuario() + ": ha iniciado una opcion no valida operacion denegada.\n");
+                        textArea.append(user.getUsuario() + " ha iniciado una opcion no valida operacion denegada.\n");
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -184,6 +192,48 @@ public class HiloTrabajo extends Thread {
         }
     }
 
+    public void nuevaCuenta() {
+        try{
+            desCipher.init(Cipher.DECRYPT_MODE, key);
+            byte[] ncifrado = (byte[]) ois.readObject();
+            String numero = new String(desCipher.doFinal(ncifrado));
+            String query = "SELECT * FROM cuentas WHERE ncuenta = ?";
+            PreparedStatement ps = conexion.prepareStatement(query);
+            ps.setString(1, numero);
+            textArea.append(user.getUsuario() + " comprobando si el numero de cuenta existe.\n");
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                textArea.append(user.getUsuario() + " numero de cuenta ya existente, operacion cancelada.\n");
+                oos.writeObject(false);
+            } else {
+                textArea.append(user.getUsuario() + "creando numero de cuenta.\n");
+                String queryInsert = "INSERT INTO cuentas(ncuenta, idusuario, saldo) VALUES(?, ?, ?)";
+                PreparedStatement psInsert = conexion.prepareStatement(queryInsert);
+                psInsert.setString(1, numero);
+                psInsert.setInt(2, user.getId());
+                psInsert.setDouble(3, 0);
+                psInsert.execute();
+                psInsert.close();
+                textArea.append(user.getUsuario() + " numero de cuenta creado.\n");
+                oos.writeObject(true);
+            }
+            rs.close();
+            ps.close();
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalBlockSizeException e) {
+            throw new RuntimeException(e);
+        } catch (BadPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void registrarse() {
         try {
             desCipher.init(Cipher.DECRYPT_MODE, key);
@@ -204,6 +254,8 @@ public class HiloTrabajo extends Thread {
             ps.setString(5, registrarse.getUsuario());
             ps.setString(6, registrarse.getContrasena());
             textArea.append("Creando un nuevo usuario llamado " + registrarse.getUsuario() + ".\n");
+            ps.execute();
+            ps.close();
         } catch (IllegalBlockSizeException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
