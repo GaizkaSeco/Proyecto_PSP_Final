@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -21,18 +22,29 @@ public class VentanaLogin extends JFrame {
     private int PUERTO = 5050;
     private String HOST = "localhost";
     private Cipher desCipher;
+    private ObjectInputStream ois;
+    private ObjectOutputStream oos;
+    private SecretKey key;
 
     public VentanaLogin() {
         setContentPane(panel);
+        try {
+            Socket socket = new Socket(HOST, PUERTO);
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            ois = new ObjectInputStream(socket.getInputStream());
+            key = (SecretKey) ois.readObject();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!usuarioField.getText().isBlank() && !contrasenaField.getText().isBlank()) {
                     try {
-                        //le hacemos una peticion al servidor mandandole los datos del mensage y cerramos conexion
-                        Socket socket = new Socket(HOST, PUERTO);
-                        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-                        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         ObjectOutputStream oosbytes = new ObjectOutputStream(bos);
                         oos.writeObject(1);
@@ -43,9 +55,8 @@ public class VentanaLogin extends JFrame {
                         oosbytes.flush();
                         byte[] userbytes = bos.toByteArray();
                         //recogemos la clave
-                        SecretKey key = (SecretKey) ois.readObject();
                         desCipher = Cipher.getInstance("DES");
-                        //configuramos modo descifrar
+                        //configuramos modo encriptar
                         desCipher.init(Cipher.ENCRYPT_MODE, key);
                         byte[] userCifrado = desCipher.doFinal(userbytes);
                         //enviamos objeto cifrado
@@ -81,10 +92,6 @@ public class VentanaLogin extends JFrame {
                     } catch (BadPaddingException ex) {
                         throw new RuntimeException(ex);
                     }
-                        /*oos.close();
-                        ois.close();
-                        oosbytes.close();
-                        bos.close();*/
                 } else {
                     JOptionPane.showMessageDialog(null, "ERROR tienes que rellenar todos los campos.");
                 }
@@ -99,7 +106,10 @@ public class VentanaLogin extends JFrame {
         registrarseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                JFrame frame = new VentanaRegistrarse(ois, oos, key);
+                frame.setSize(400, 400);
+                frame.setVisible(true);
+                dispose();
             }
         });
     }

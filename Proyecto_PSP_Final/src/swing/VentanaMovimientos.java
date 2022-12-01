@@ -14,6 +14,7 @@ public class VentanaMovimientos extends JFrame {
     private JPanel panel;
     private JTable table1;
     private JButton atrasButton;
+    private JTable table2;
     private SecretKey key;
     private Socket socket;
 

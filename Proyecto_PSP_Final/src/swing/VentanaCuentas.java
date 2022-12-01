@@ -55,6 +55,8 @@ public class VentanaCuentas extends JFrame {
             ByteArrayInputStream bis = new ByteArrayInputStream(cuentasBytes);
             ObjectInputStream oisbytes = new ObjectInputStream(bis);
             List<Cuenta> cuentas = (List<Cuenta>) oisbytes.readObject();
+            bis.close();
+            oisbytes.close();
             int cantidad = cuentas.size();
             String[][] d = new String[cantidad][5];
             String[] nombreColumnas = {"Numero de cuenta", "Saldo"};

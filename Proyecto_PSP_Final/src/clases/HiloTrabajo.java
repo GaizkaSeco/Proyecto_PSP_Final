@@ -35,47 +35,50 @@ public class HiloTrabajo extends Thread {
             textArea.append("\nSe ha conectado un usuario.\n");
             oos = new ObjectOutputStream(c.getOutputStream());
             ois = new ObjectInputStream(c.getInputStream());
-            //bos = new ByteArrayOutputStream();
-            //oosbytes = new ObjectOutputStream(bos);
-            while (true) {
-                int opcion = (int) ois.readObject();
-                switch (opcion) {
-                    case 1:
-                        textArea.append("Ha iniciado la opcin login.");
-                        login();
-                        if (user.isAcierto()) {
-                            menuInicio();
-                        }
-                        break;
-                    case 2:
-                        textArea.append("Ha iniciado la opcin registrarse.");
-                        //regstrarse();
-                        break;
-                    default:
-                        textArea.append("Ha iniciado una opcion no valida operacion denegada.");
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void login() {
-        try {
-            //conexion a la bd
             Class.forName("com.mysql.cj.jdbc.Driver");
             conexion = DriverManager.getConnection("jdbc:mysql://localhost/proyecto_psp_final", "root", "admin");
             textArea.append("Obteniendo claves con cifrado DES\n");
             //generamos la clave y la enviamos
             KeyGenerator keygen = KeyGenerator.getInstance("DES");
             key = keygen.generateKey();
-            desCipher = Cipher.getInstance("DES");
-            desCipher.init(Cipher.DECRYPT_MODE, key);
             //enviamos la clave
             oos.writeObject(key);
+            desCipher = Cipher.getInstance("DES");
             textArea.append("Clave enviada.\n");
+            while (true) {
+                int opcion = (int) ois.readObject();
+                switch (opcion) {
+                    case 1:
+                        textArea.append("Ha iniciado la opcin login.\n");
+                        login();
+                        if (user.isAcierto()) {
+                            menuInicio();
+                        }
+                        break;
+                    case 2:
+                        textArea.append("Ha iniciado la opcin registrarse.\n");
+                        registrarse();
+                        break;
+                    default:
+                        textArea.append("Ha iniciado una opcion no valida operacion denegada.\n");
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchPaddingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void login() {
+        try {
+            desCipher.init(Cipher.DECRYPT_MODE, key);
             //recogemos el login
             textArea.append("Recuperando datos.\n");
             byte[] loginCifrado = (byte[]) ois.readObject();
@@ -111,8 +114,6 @@ public class HiloTrabajo extends Thread {
             oos.writeObject(loginCifrado);
             bos.close();
             oosbytes.close();
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            textArea.append("Error al generar el algoritmo\n");
         } catch (InvalidKeyException | IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
@@ -179,6 +180,46 @@ public class HiloTrabajo extends Thread {
         } catch (BadPaddingException e) {
             throw new RuntimeException(e);
         } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void registrarse() {
+        try {
+            desCipher.init(Cipher.DECRYPT_MODE, key);
+            byte[] registrarseCifrado = (byte[]) ois.readObject();
+            byte[] registraseBytes = desCipher.doFinal(registrarseCifrado);
+            ByteArrayInputStream bis = new ByteArrayInputStream(registraseBytes);
+            ObjectInputStream oisbytes = new ObjectInputStream(bis);
+            NuevoUsuario registrarse = (NuevoUsuario) oisbytes.readObject();
+            bis.close();
+            oisbytes.close();
+            textArea.append("Registrando nuevo usuario" + registrarse.getUsuario() + ".\n");
+            String query = "INSERT INTO usuarios(nombre, apellido, edad, email, usuario, contrasena) VALUES(?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = conexion.prepareStatement(query);
+            ps.setString(1, registrarse.getNombre());
+            ps.setString(2, registrarse.getApellido());
+            ps.setInt(3, registrarse.getEdad());
+            ps.setString(4, registrarse.getEmail());
+            ps.setString(5, registrarse.getUsuario());
+            ps.setString(6, registrarse.getContrasena());
+            textArea.append("Creando un nuevo usuario llamado" + registrarse.getUsuario() + ".\n");
+            if (ps.execute()) {
+                oos.writeObject(true);
+            } else {
+                oos.writeObject(false);
+            }
+        } catch (IllegalBlockSizeException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (BadPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }

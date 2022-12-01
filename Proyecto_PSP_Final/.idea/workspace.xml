@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="fc91291d-12d2-481e-9743-fbbe16706f5c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,9 +36,14 @@
     "UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH": "372",
     "WebServerToolWindowFactoryState": "false",
     "last_opened_file_path": "C:/Users/omega/Desktop/Repositorios/Proyecto_AD_Agencias_UD2",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0"
+    "project.structure.side.proportion": "0.0",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RunManager" selected="Application.Cliente">
@@ -79,7 +87,8 @@
       <option name="presentableId" value="Default" />
       <updated>1669750936336</updated>
       <workItem from="1669750937641" duration="4173000" />
-      <workItem from="1669809047960" duration="20750000" />
+      <workItem from="1669809047960" duration="21660000" />
+      <workItem from="1669883529943" duration="4868000" />
     </task>
     <servers />
   </component>
