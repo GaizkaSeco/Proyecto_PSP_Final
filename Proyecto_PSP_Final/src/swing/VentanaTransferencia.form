@@ -8,15 +8,9 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="9f256" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+      <component id="9f256" class="javax.swing.JComboBox" binding="comboBoxOrigen">
         <constraints>
           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties/>
-      </component>
-      <component id="be311" class="javax.swing.JComboBox" binding="comboBox2" default-binding="true">
-        <constraints>
-          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
       </component>
@@ -44,7 +38,7 @@
           <text value="Transferir"/>
         </properties>
       </component>
-      <component id="d14a" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+      <component id="d14a" class="javax.swing.JTextField" binding="cantidadField">
         <constraints>
           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -67,6 +61,14 @@
         <properties>
           <text value="Atras"/>
         </properties>
+      </component>
+      <component id="c2bc9" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
       </component>
     </children>
   </grid>

@@ -6,6 +6,7 @@ public class Cuenta implements Serializable {
     private int id;
     private String numero;
     private double saldo;
+    private int iduser;
 
     public Cuenta(int id, String numero, double saldo) {
         this.id = id;
@@ -35,5 +36,13 @@ public class Cuenta implements Serializable {
 
     public void setSaldo(double saldo) {
         this.saldo = saldo;
+    }
+
+    public int getIduser() {
+        return iduser;
+    }
+
+    public void setIduser(int iduser) {
+        this.iduser = iduser;
     }
 }

@@ -43,5 +43,14 @@ public class VentanaMenuPrincipal extends JFrame {
                 dispose();
             }
         });
+        nuevaTranferenciaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new VentanaTransferencia(ois, oos, key);
+                frame.setSize(300, 300);
+                frame.setVisible(true);
+                dispose();
+            }
+        });
     }
 }

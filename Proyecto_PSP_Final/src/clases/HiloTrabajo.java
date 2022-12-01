@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
 
 public class HiloTrabajo extends Thread {
     private Socket c = new Socket();
@@ -142,6 +143,10 @@ public class HiloTrabajo extends Thread {
                         break;
                     case 3:
                         textArea.append(user.getUsuario() + " esta accediendo a hacer una transferencia.\n");
+                        cargarCuentas();
+                        if ((boolean) ois.readObject()) {
+                            hacerTransferencia();
+                        }
                         break;
                     case 4:
                         textArea.append(user.getUsuario() + " esta accediendo a sus movimientos.\n");
@@ -267,6 +272,76 @@ public class HiloTrabajo extends Thread {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void hacerTransferencia() {
+        try {
+            textArea.append("inciando tranferencia de " + user.getUsuario() + "\n");
+            byte[] transCifrada = (byte[]) ois.readObject();
+            desCipher.init(Cipher.DECRYPT_MODE, key);
+            byte[] transBytes = desCipher.doFinal(transCifrada);
+            ByteArrayInputStream bis = new ByteArrayInputStream(transBytes);
+            ObjectInputStream oisbytes = new ObjectInputStream(bis);
+            Transferencia transferencia = (Transferencia) oisbytes.readObject();
+            bis.close();
+            oisbytes.close();
+            String query = "INSERT INTO transacciones(ncuentaorigen, ncuentadestino, fecha, cantidad, descripcion) VALUES(?, ?, ?, ?, ?)";
+            PreparedStatement ps = conexion.prepareStatement(query);
+            ps.setString(1, transferencia.getOrigen());
+            ps.setString(2, transferencia.getDestino());
+            ps.setString(3, String.valueOf(LocalDateTime.now()));
+            ps.setString(4, transferencia.getOrigen());
+            ps.setString(5, "Prueba");
+            ps.execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalBlockSizeException e) {
+            throw new RuntimeException(e);
+        } catch (BadPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void cargarCuentas() {
+        try {
+            List<Cuenta> cuentas = new ArrayList<>();
+            textArea.append(user.getUsuario() + " esta cargando los datos para hacer una transferencia.\n");
+            String query = "SELECT * FROM cuentas WHERE idusuario = ?";
+            PreparedStatement ps = conexion.prepareStatement(query);
+            ps.setInt(1, user.getId());
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Cuenta cuenta = new Cuenta(rs.getInt(1), rs.getString(2), rs.getDouble(3));
+                cuentas.add(cuenta);
+            }
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oosbytes = new ObjectOutputStream(bos);
+            oosbytes.writeObject(cuentas);
+            oosbytes.flush();
+            byte[] cuentasbytes = bos.toByteArray();
+            desCipher.init(Cipher.ENCRYPT_MODE, key);
+            byte[] cuentasCifradas = desCipher.doFinal(cuentasbytes);
+            textArea.append("Enviando datos de cuentas a " + user.getUsuario() + "\n");
+            oos.writeObject(cuentasCifradas);
+            bos.close();
+            oosbytes.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalBlockSizeException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (BadPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
             throw new RuntimeException(e);
         }
     }

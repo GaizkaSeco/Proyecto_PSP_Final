@@ -20,15 +20,9 @@ public class VentanaLogin extends JFrame {
     private JTextField usuarioField;
     private JButton registrarseButton;
     private Cipher desCipher;
-    private ObjectInputStream ois;
-    private ObjectOutputStream oos;
-    private SecretKey key;
 
     public VentanaLogin(ObjectInputStream ois, ObjectOutputStream oos, SecretKey key) {
         setContentPane(panel);
-        this.ois = ois;
-        this.oos = oos;
-        this.key = key;
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
