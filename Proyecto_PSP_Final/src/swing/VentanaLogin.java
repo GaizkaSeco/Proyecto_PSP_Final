@@ -19,27 +19,16 @@ public class VentanaLogin extends JFrame {
     private JTextField contrasenaField;
     private JTextField usuarioField;
     private JButton registrarseButton;
-    private int PUERTO = 5050;
-    private String HOST = "localhost";
     private Cipher desCipher;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
     private SecretKey key;
 
-    public VentanaLogin() {
+    public VentanaLogin(ObjectInputStream ois, ObjectOutputStream oos, SecretKey key) {
         setContentPane(panel);
-        try {
-            Socket socket = new Socket(HOST, PUERTO);
-            oos = new ObjectOutputStream(socket.getOutputStream());
-            ois = new ObjectInputStream(socket.getInputStream());
-            key = (SecretKey) ois.readObject();
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        this.ois = ois;
+        this.oos = oos;
+        this.key = key;
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

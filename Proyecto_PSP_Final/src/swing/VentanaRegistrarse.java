@@ -48,7 +48,7 @@ public class VentanaRegistrarse extends JFrame {
                         //enviamos objeto cifrado
                         oos.writeObject(registrarseCifrado);
                         JOptionPane.showMessageDialog(null, "El usuario se ha creado correctamente.");
-                        JFrame frame = new VentanaMenuPrincipal(ois, oos, key);
+                        JFrame frame = new VentanaLogin(ois, oos, key);
                         frame.setSize(300, 300);
                         frame.setVisible(true);
                         dispose();

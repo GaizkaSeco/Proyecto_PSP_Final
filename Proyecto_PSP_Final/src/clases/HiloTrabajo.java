@@ -203,12 +203,7 @@ public class HiloTrabajo extends Thread {
             ps.setString(4, registrarse.getEmail());
             ps.setString(5, registrarse.getUsuario());
             ps.setString(6, registrarse.getContrasena());
-            textArea.append("Creando un nuevo usuario llamado" + registrarse.getUsuario() + ".\n");
-            if (ps.execute()) {
-                oos.writeObject(true);
-            } else {
-                oos.writeObject(false);
-            }
+            textArea.append("Creando un nuevo usuario llamado " + registrarse.getUsuario() + ".\n");
         } catch (IllegalBlockSizeException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
