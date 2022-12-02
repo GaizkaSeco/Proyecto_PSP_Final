@@ -58,7 +58,7 @@ public class VentanaCuentas extends JFrame {
             bis.close();
             oisbytes.close();
             int cantidad = cuentas.size();
-            String[][] d = new String[cantidad][5];
+            String[][] d = new String[cantidad][2];
             String[] nombreColumnas = {"Numero de cuenta", "Saldo"};
             for (int i = 0; i < cuentas.size(); i++) {
                 d[i][0] = String.valueOf(cuentas.get(i).getNumero());

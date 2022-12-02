@@ -6,11 +6,29 @@ public class Transferencia implements Serializable {
     private String origen;
     private String destino;
     private double cantidad;
+    private String descripcion;
+    private String fecha;
 
     public Transferencia(String origen, String destino, double cantidad) {
         this.origen = origen;
         this.destino = destino;
         this.cantidad = cantidad;
+    }
+
+    public Transferencia(String origen, String destino, double cantidad, String descripcion, String fecha) {
+        this.origen = origen;
+        this.destino = destino;
+        this.cantidad = cantidad;
+        this.descripcion = descripcion;
+        this.fecha = fecha;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public String getOrigen() {
@@ -35,5 +53,13 @@ public class Transferencia implements Serializable {
 
     public void setCantidad(double cantidad) {
         this.cantidad = cantidad;
+    }
+
+    public String getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
     }
 }

@@ -1,7 +1,6 @@
 package swing;
 
 import clases.NuevoUsuario;
-import clases.User;
 
 import javax.crypto.*;
 import javax.swing.*;
@@ -23,6 +22,7 @@ public class VentanaRegistrarse extends JFrame {
     private JTextField nombreField;
     private JPanel panel1;
     private JButton registrarseButton;
+    private JButton cancelarButton;
 
     public VentanaRegistrarse(ObjectInputStream ois, ObjectOutputStream oos, SecretKey key) {
         setContentPane(panel1);
@@ -70,6 +70,15 @@ public class VentanaRegistrarse extends JFrame {
                 } catch (InvalidKeyException ex) {
                     throw new RuntimeException(ex);
                 }
+            }
+        });
+        cancelarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new VentanaLogin(ois, oos, key);
+                frame.setSize(300, 300);
+                frame.setVisible(true);
+                dispose();
             }
         });
     }

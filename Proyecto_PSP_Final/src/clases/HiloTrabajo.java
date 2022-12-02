@@ -150,6 +150,7 @@ public class HiloTrabajo extends Thread {
                         break;
                     case 4:
                         textArea.append(user.getUsuario() + " esta accediendo a sus movimientos.\n");
+                        cargarMovimientos();
                         break;
                     default:
                         textArea.append(user.getUsuario() + " ha iniciado una opcion no valida operacion denegada.\n");
@@ -292,9 +293,22 @@ public class HiloTrabajo extends Thread {
             ps.setString(1, transferencia.getOrigen());
             ps.setString(2, transferencia.getDestino());
             ps.setString(3, String.valueOf(LocalDateTime.now()));
-            ps.setString(4, transferencia.getOrigen());
+            ps.setDouble(4, transferencia.getCantidad());
             ps.setString(5, "Prueba");
             ps.execute();
+            //actulizamos las cuentas
+            textArea.append("Actualizando las cuentas de la transferencia que ha realizada " + user.getUsuario());
+            query = "UPDATE cuentas SET saldo = saldo - ?  WHERE ncuenta = ?";
+            ps = conexion.prepareStatement(query);
+            ps.setDouble(1, transferencia.getCantidad());
+            ps.setString(2, transferencia.getOrigen());
+            ps.execute();
+            query = "UPDATE cuentas SET saldo = saldo + ?  WHERE ncuenta = ?";
+            ps = conexion.prepareStatement(query);
+            ps.setDouble(1, transferencia.getCantidad());
+            ps.setString(2, transferencia.getDestino());
+            ps.execute();
+            ps.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
@@ -330,6 +344,43 @@ public class HiloTrabajo extends Thread {
             desCipher.init(Cipher.ENCRYPT_MODE, key);
             byte[] cuentasCifradas = desCipher.doFinal(cuentasbytes);
             textArea.append("Enviando datos de cuentas a " + user.getUsuario() + "\n");
+            oos.writeObject(cuentasCifradas);
+            bos.close();
+            oosbytes.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalBlockSizeException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (BadPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void cargarMovimientos() {
+        try {
+            List<Transferencia> movimientos = new ArrayList<>();
+            textArea.append(user.getUsuario() + " esta cargando los movimientos.\n");
+            String query = "SELECT * FROM transacciones WHERE ncuentaorigen IN (SELECT ncuenta FROM cuentas WHERE idusuario = ?) OR ncuentadestino IN (SELECT ncuenta FROM cuentas WHERE idusuario = ?);";
+            PreparedStatement ps = conexion.prepareStatement(query);
+            ps.setInt(1, user.getId());
+            ps.setInt(2, user.getId());
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Transferencia transferencia = new Transferencia(rs.getString(2), rs.getString(3), rs.getDouble(5), rs.getString(6), rs.getString(4));
+                movimientos.add(transferencia);
+            }
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oosbytes = new ObjectOutputStream(bos);
+            oosbytes.writeObject(movimientos);
+            oosbytes.flush();
+            byte[] cuentasbytes = bos.toByteArray();
+            desCipher.init(Cipher.ENCRYPT_MODE, key);
+            byte[] cuentasCifradas = desCipher.doFinal(cuentasbytes);
+            textArea.append("Enviando datos transacciones de " + user.getUsuario() + "\n");
             oos.writeObject(cuentasCifradas);
             bos.close();
             oosbytes.close();
