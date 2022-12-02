@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -24,12 +25,13 @@ public class Cliente {
             JFrame frame = new VentanaLogin(ois, oos, key);
             frame.setSize(400, 300);
             frame.setVisible(true);
+            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
+            JOptionPane.showMessageDialog(null, "Ha surgido un error inesperado intentalo mas tarde.");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            JOptionPane.showMessageDialog(null, "Ha surgido un error al intentar conectarse con el servidor intentalo mas tarde.");
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            JOptionPane.showMessageDialog(null, "No se ha podido cargar la ventana de inicio de sesion.");
         }
     }
 }

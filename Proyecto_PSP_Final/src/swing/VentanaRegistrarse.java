@@ -12,6 +12,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class VentanaRegistrarse extends JFrame {
     private JTextField contrasenaField;
@@ -31,27 +33,42 @@ public class VentanaRegistrarse extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     int edad = Integer.parseInt(edadField.getText());
+                    Pattern mayus = Pattern.compile("^([A-Z]{1}[a-z]+)$");
                     if (!nombreField.getText().isBlank() && !apellidoField.getText().isBlank() && !emailField.getText().isBlank() && !usuarioField.getText().isBlank() && !contrasenaField.getText().isBlank()) {
-                        oos.writeObject(2);
-                        //creamos un objeto con todos los datos para registrase
-                        NuevoUsuario registrarse = new NuevoUsuario(nombreField.getText(), apellidoField.getText(), edad, emailField.getText(), usuarioField.getText(), contrasenaField.getText());
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        ObjectOutputStream oosbytes = new ObjectOutputStream(bos);
-                        //lo comvertimos a bytes
-                        oosbytes.writeObject(registrarse);
-                        oosbytes.flush();
-                        byte[] registrarsebytes = bos.toByteArray();
-                        Cipher desCipher = Cipher.getInstance("DES");
-                        //configuramos modo descifrar
-                        desCipher.init(Cipher.ENCRYPT_MODE, key);
-                        byte[] registrarseCifrado = desCipher.doFinal(registrarsebytes);
-                        //enviamos objeto cifrado
-                        oos.writeObject(registrarseCifrado);
-                        JOptionPane.showMessageDialog(null, "El usuario se ha creado correctamente.");
-                        JFrame frame = new VentanaLogin(ois, oos, key);
-                        frame.setSize(300, 300);
-                        frame.setVisible(true);
-                        dispose();
+                        Matcher nombre = mayus.matcher(nombreField.getText());
+                        Matcher apellido = mayus.matcher(apellidoField.getText());
+                        if (nombre.find() && apellido.find()) {
+                            //duda preguntar
+                            Pattern edadp = Pattern.compile("^[0-9]{1,3}$");
+                            Matcher edadmatch = edadp.matcher(edadField.getText());
+                            if (edadmatch.find()) {
+                                //String con = "^.*(?=.{8,})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$";
+                                oos.writeObject(2);
+                                //creamos un objeto con todos los datos para registrase
+                                NuevoUsuario registrarse = new NuevoUsuario(nombreField.getText(), apellidoField.getText(), edad, emailField.getText(), usuarioField.getText(), contrasenaField.getText());
+                                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                                ObjectOutputStream oosbytes = new ObjectOutputStream(bos);
+                                //lo comvertimos a bytes
+                                oosbytes.writeObject(registrarse);
+                                oosbytes.flush();
+                                byte[] registrarsebytes = bos.toByteArray();
+                                Cipher desCipher = Cipher.getInstance("DES");
+                                //configuramos modo descifrar
+                                desCipher.init(Cipher.ENCRYPT_MODE, key);
+                                byte[] registrarseCifrado = desCipher.doFinal(registrarsebytes);
+                                //enviamos objeto cifrado
+                                oos.writeObject(registrarseCifrado);
+                                JOptionPane.showMessageDialog(null, "El usuario se ha creado correctamente.");
+                                JFrame frame = new VentanaLogin(ois, oos, key);
+                                frame.setSize(300, 300);
+                                frame.setVisible(true);
+                                dispose();
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Los datos del campo edad no son correctos.");
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Comprueba que el nombre y apellido esta bien escrito.");
+                        }
                     } else {
                         JOptionPane.showMessageDialog(null, "Debes rellenar todos los campos para registrarse.");
                     }
