@@ -10,6 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.Random;
 
 public class HiloTrabajo extends Thread {
     private Socket c = new Socket();
@@ -286,29 +287,45 @@ public class HiloTrabajo extends Thread {
             ByteArrayInputStream bis = new ByteArrayInputStream(transBytes);
             ObjectInputStream oisbytes = new ObjectInputStream(bis);
             Transferencia transferencia = (Transferencia) oisbytes.readObject();
+            //enviar codigo de seguridad aqui
+            Random r = new Random();
+            int numero = r.nextInt(1000, 9999);
+            textArea.append("El numero de seguridad de " + user.getUsuario() + " es " + numero);
+            desCipher.init(Cipher.ENCRYPT_MODE, key);
+            byte[] numeroCifrado = desCipher.doFinal(String.valueOf(numero).getBytes());
+            oos.writeObject(numeroCifrado);
+            byte[] numeroCifradoIntento = (byte[]) ois.readObject();
+            desCipher.init(Cipher.DECRYPT_MODE, key);
+            int numeroIntento = Integer.parseInt(new String(desCipher.doFinal(numeroCifradoIntento)));
+            if (numeroIntento == numero) {
+                oos.writeObject(true);
+                //insertamos los datos
+                String query = "INSERT INTO transacciones(ncuentaorigen, ncuentadestino, fecha, cantidad, descripcion) VALUES(?, ?, ?, ?, ?)";
+                PreparedStatement ps = conexion.prepareStatement(query);
+                ps.setString(1, transferencia.getOrigen());
+                ps.setString(2, transferencia.getDestino());
+                ps.setString(3, String.valueOf(LocalDateTime.now()));
+                ps.setDouble(4, transferencia.getCantidad());
+                ps.setString(5, transferencia.getDescripcion());
+                ps.execute();
+                //actulizamos las cuentas
+                textArea.append("Actualizando las cuentas de la transferencia que ha realizada " + user.getUsuario());
+                query = "UPDATE cuentas SET saldo = saldo - ?  WHERE ncuenta = ?";
+                ps = conexion.prepareStatement(query);
+                ps.setDouble(1, transferencia.getCantidad());
+                ps.setString(2, transferencia.getOrigen());
+                ps.execute();
+                query = "UPDATE cuentas SET saldo = saldo + ?  WHERE ncuenta = ?";
+                ps = conexion.prepareStatement(query);
+                ps.setDouble(1, transferencia.getCantidad());
+                ps.setString(2, transferencia.getDestino());
+                ps.execute();
+                ps.close();
+            } else {
+                oos.writeObject(false);
+            }
             bis.close();
             oisbytes.close();
-            String query = "INSERT INTO transacciones(ncuentaorigen, ncuentadestino, fecha, cantidad, descripcion) VALUES(?, ?, ?, ?, ?)";
-            PreparedStatement ps = conexion.prepareStatement(query);
-            ps.setString(1, transferencia.getOrigen());
-            ps.setString(2, transferencia.getDestino());
-            ps.setString(3, String.valueOf(LocalDateTime.now()));
-            ps.setDouble(4, transferencia.getCantidad());
-            ps.setString(5, "Prueba");
-            ps.execute();
-            //actulizamos las cuentas
-            textArea.append("Actualizando las cuentas de la transferencia que ha realizada " + user.getUsuario());
-            query = "UPDATE cuentas SET saldo = saldo - ?  WHERE ncuenta = ?";
-            ps = conexion.prepareStatement(query);
-            ps.setDouble(1, transferencia.getCantidad());
-            ps.setString(2, transferencia.getOrigen());
-            ps.execute();
-            query = "UPDATE cuentas SET saldo = saldo + ?  WHERE ncuenta = ?";
-            ps = conexion.prepareStatement(query);
-            ps.setDouble(1, transferencia.getCantidad());
-            ps.setString(2, transferencia.getDestino());
-            ps.execute();
-            ps.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {

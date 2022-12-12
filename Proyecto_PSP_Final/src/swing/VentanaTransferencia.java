@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class VentanaTransferencia extends JFrame {
@@ -22,6 +21,7 @@ public class VentanaTransferencia extends JFrame {
     private JTextField cantidadField;
     private JButton atrasButton;
     private JTextField textField1;
+    private JTextField descripcionField;
     private User user;
 
     public VentanaTransferencia(ObjectInputStream ois, ObjectOutputStream oos, SecretKey key) {
@@ -59,11 +59,11 @@ public class VentanaTransferencia extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    oos.writeObject(true);
                     double cantidad = Double.parseDouble(cantidadField.getText());
-                    if (!textField1.getText().isBlank()) {
+                    if (!textField1.getText().isBlank() && !descripcionField.getText().isBlank()) {
+                        oos.writeObject(true);
                         String ncuentadestino = comboBoxOrigen.getSelectedItem().toString();
-                        Transferencia transferencia = new Transferencia(ncuentadestino, textField1.getText(), cantidad);
+                        Transferencia transferencia = new Transferencia(ncuentadestino, textField1.getText(), cantidad, descripcionField.getText());
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         ObjectOutputStream oosbytes = new ObjectOutputStream(bos);
                         oosbytes.writeObject(transferencia);
@@ -75,9 +75,12 @@ public class VentanaTransferencia extends JFrame {
                         byte[] transferenciaCifrado = desCipher.doFinal(transferenciabytes);
                         //enviamos objeto cifrado
                         oos.writeObject(transferenciaCifrado);
-                        JFrame frame = new VentanaMenuPrincipal(ois, oos, key);
+                        JFrame frame = new VentanaCodigo(ois, oos, key);
                         frame.setSize(300, 300);
                         frame.setVisible(true);
+                        JFrame movil = new VentanaMovil(ois, oos, key);
+                        movil.setSize(300, 300);
+                        movil.setVisible(true);
                         dispose();
                     }
                 } catch (NumberFormatException ex) {

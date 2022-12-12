@@ -9,10 +9,11 @@ public class Transferencia implements Serializable {
     private String descripcion;
     private String fecha;
 
-    public Transferencia(String origen, String destino, double cantidad) {
+    public Transferencia(String origen, String destino, double cantidad, String descripcion) {
         this.origen = origen;
         this.destino = destino;
         this.cantidad = cantidad;
+        this.descripcion = descripcion;
     }
 
     public Transferencia(String origen, String destino, double cantidad, String descripcion, String fecha) {
