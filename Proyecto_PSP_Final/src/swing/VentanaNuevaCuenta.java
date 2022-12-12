@@ -9,6 +9,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class VentanaNuevaCuenta extends JFrame {
     private JButton anadirButton;
@@ -22,7 +24,9 @@ public class VentanaNuevaCuenta extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (!numeroField.getText().isBlank()) {
+                    Pattern pattern  = Pattern.compile("^([A-Za-z]{2}[0-9]{2} [0-9]{4} [0-9]{2} [0-9]{10})$");
+                    Matcher ncuenta = pattern.matcher(numeroField.getText());
+                    if (!numeroField.getText().isBlank() && ncuenta.find()) {
                         oos.writeObject(2);
                         Cipher desCipher = Cipher.getInstance("DES");
                         desCipher.init(Cipher.ENCRYPT_MODE, key);
@@ -38,6 +42,8 @@ public class VentanaNuevaCuenta extends JFrame {
                             JOptionPane.showMessageDialog(null, "El numero de cuenta ya existe, usa otro.");
                             numeroField.setText("");
                         }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "El numero de cuenta esta mal escrito o vacio.");
                     }
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);

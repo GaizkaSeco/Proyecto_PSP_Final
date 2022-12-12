@@ -37,7 +37,7 @@ public VentanaCodigo(ObjectInputStream ois, ObjectOutputStream oos, SecretKey ke
                     frame.setVisible(true);
                     dispose();
                 } else {
-                    //poner que rellene el campo
+                    JOptionPane.showMessageDialog(null, "El campo del codigo tiene que estar rellenado.");
                 }
             } catch (NoSuchPaddingException ex) {
                 throw new RuntimeException(ex);

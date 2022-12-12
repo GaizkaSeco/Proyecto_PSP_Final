@@ -39,7 +39,7 @@ public VentanaMovil(ObjectInputStream ois, ObjectOutputStream oos, SecretKey key
     cerrarButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-
+            dispose();
         }
     });
 }
