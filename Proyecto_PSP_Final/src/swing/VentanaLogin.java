@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class VentanaLogin extends JFrame {
@@ -31,8 +32,14 @@ public class VentanaLogin extends JFrame {
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         ObjectOutputStream oosbytes = new ObjectOutputStream(bos);
                         oos.writeObject(1);
+                        //hasheamos la contraseña
+                        MessageDigest md = MessageDigest.getInstance("SHA");
+                        byte[] contrasenaBytes = contrasenaField.getText().getBytes();
+                        md.update(contrasenaBytes);
+                        byte[] resumen = md.digest();
+                        String hashContrasena = new String(resumen);
                         //creamos un objeto con todos los datos del inicio de sesion
-                        User user = new User(usuarioField.getText(), contrasenaField.getText());
+                        User user = new User(usuarioField.getText(), hashContrasena);
                         //lo comvertimos a bytes
                         oosbytes.writeObject(user);
                         oosbytes.flush();

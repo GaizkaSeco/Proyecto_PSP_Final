@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,10 +43,14 @@ public class VentanaRegistrarse extends JFrame {
                             Pattern edadp = Pattern.compile("^[0-9]{1,3}$");
                             Matcher edadmatch = edadp.matcher(edadField.getText());
                             if (edadmatch.find()) {
-                                //String con = "^.*(?=.{8,})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$";
                                 oos.writeObject(2);
                                 //creamos un objeto con todos los datos para registrase
-                                NuevoUsuario registrarse = new NuevoUsuario(nombreField.getText(), apellidoField.getText(), edad, emailField.getText(), usuarioField.getText(), contrasenaField.getText());
+                                MessageDigest md = MessageDigest.getInstance("SHA");
+                                byte[] contrasenaBytes = contrasenaField.getText().getBytes();
+                                md.update(contrasenaBytes);
+                                byte[] resumen = md.digest();
+                                String hashContrasena = new String(resumen);
+                                NuevoUsuario registrarse = new NuevoUsuario(nombreField.getText(), apellidoField.getText(), edad, emailField.getText(), usuarioField.getText(), hashContrasena);
                                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                                 ObjectOutputStream oosbytes = new ObjectOutputStream(bos);
                                 //lo comvertimos a bytes

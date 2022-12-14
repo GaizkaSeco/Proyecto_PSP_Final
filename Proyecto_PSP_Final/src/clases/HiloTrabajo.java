@@ -47,7 +47,7 @@ public class HiloTrabajo extends Thread {
             oos.writeObject(key);
             desCipher = Cipher.getInstance("DES");
             textArea.append("Clave enviada.\n");
-            while (true) {
+            while (activo) {
                 int opcion = (int) ois.readObject();
                 switch (opcion) {
                     case 1:
