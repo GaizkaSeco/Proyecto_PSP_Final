@@ -9,6 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.Random;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -255,7 +256,7 @@ public class HiloTrabajo extends Thread {
             String numero = new String(desCipher.doFinal(ncifrado));
             String query = "SELECT * FROM cuentas WHERE ncuenta = ?";
             PreparedStatement ps = conexion.prepareStatement(query);
-            ps.setString(1, numero);
+            ps.setString(1, numero.toUpperCase());
             textArea.append(user.getUsuario() + " comprobando si el numero de cuenta existe.\n");
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -265,7 +266,7 @@ public class HiloTrabajo extends Thread {
                 textArea.append(user.getUsuario() + "creando numero de cuenta.\n");
                 String queryInsert = "INSERT INTO cuentas(ncuenta, idusuario, saldo) VALUES(?, ?, ?)";
                 PreparedStatement psInsert = conexion.prepareStatement(queryInsert);
-                psInsert.setString(1, numero);
+                psInsert.setString(1, numero.toUpperCase());
                 psInsert.setInt(2, user.getId());
                 psInsert.setDouble(3, 0);
                 psInsert.execute();
