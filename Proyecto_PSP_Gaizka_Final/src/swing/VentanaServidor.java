@@ -135,7 +135,7 @@ public class VentanaServidor extends javax.swing.JFrame {
             HiloEscucha hilo = new HiloEscucha(server, textArea1, activo);
             hilo.start();
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            JOptionPane.showMessageDialog(null, "El servidor ya esta encendido o el puerto esta en uso.");
         }
     }//GEN-LAST:event_botonIniciarMousePressed
 

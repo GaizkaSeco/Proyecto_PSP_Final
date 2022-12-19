@@ -4,7 +4,6 @@ import javax.crypto.*;
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketException;
 import java.security.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -69,16 +68,8 @@ public class HiloTrabajo extends Thread {
                         textArea.append("Ha iniciado una opcion no valida operacion denegada.\n");
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchPaddingException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | SQLException | NoSuchAlgorithmException | NoSuchPaddingException | ClassNotFoundException ignored) {
+
         }
     }
 
@@ -120,16 +111,8 @@ public class HiloTrabajo extends Thread {
             oos.writeObject(loginCifrado);
             bos.close();
             oosbytes.close();
-        } catch (InvalidKeyException | IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | ClassNotFoundException | SQLException | InvalidKeyException | BadPaddingException |
+                 IllegalBlockSizeException ignored) {
         }
     }
 
@@ -164,10 +147,8 @@ public class HiloTrabajo extends Thread {
                     default:
                         textArea.append(user.getUsuario() + " ha iniciado una opcion no valida operacion denegada.\n");
                 }
-            } catch (IOException e) {
-                //JOptionPane.showMessageDialog(null, "ERROR inesperado.");
-            } catch (ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(null, "No se han podido cargar los datos por que no se han podido castear.");
+            } catch (IOException | ClassNotFoundException ignored) {
+
             }
         }
     }
@@ -185,14 +166,8 @@ public class HiloTrabajo extends Thread {
             rsa.update(documento.getBytes());
             byte[] firma = rsa.sign();
             oos.writeObject(firma);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        } catch (SignatureException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | IOException ignored) {
+
         }
     }
 
@@ -218,16 +193,8 @@ public class HiloTrabajo extends Thread {
             oos.writeObject(cuentasCifradas);
             bos.close();
             oosbytes.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | IOException ignored) {
+
         }
     }
 
@@ -258,18 +225,8 @@ public class HiloTrabajo extends Thread {
             }
             rs.close();
             ps.close();
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(null, "No se han podido cargar los datos por que no se han podido castear.");
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | SQLException |
+                 ClassNotFoundException | IOException ignored) {
         }
     }
 
@@ -295,18 +252,8 @@ public class HiloTrabajo extends Thread {
             textArea.append("Creando un nuevo usuario llamado " + registrarse.getUsuario() + ".\n");
             ps.execute();
             ps.close();
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(null, "No se han podido cargar los datos por que no se han podido castear.");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (IllegalBlockSizeException | SQLException | InvalidKeyException | BadPaddingException | IOException | ClassNotFoundException ignored) {
+
         }
     }
 
@@ -358,14 +305,8 @@ public class HiloTrabajo extends Thread {
             }
             bis.close();
             oisbytes.close();
-        } catch (IOException | BadPaddingException | IllegalBlockSizeException e) {
-            //JOptionPane.showMessageDialog(null, "ERROR inesperado.");
-        } catch (ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(null, "No se han podido cargar los datos por que no se han podido castear.");
-        } catch (InvalidKeyException e) {
-            JOptionPane.showMessageDialog(null, "La llave no es la correcta.");
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "ERROR en la sentencia SQL.");
+        } catch (BadPaddingException | IllegalBlockSizeException | ClassNotFoundException | InvalidKeyException | SQLException | IOException ignored) {
+
         }
     }
 
@@ -392,12 +333,8 @@ public class HiloTrabajo extends Thread {
             oos.writeObject(cuentasCifradas);
             bos.close();
             oosbytes.close();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "ERROR en la sentencia SQL.");
-        } catch (IllegalBlockSizeException | BadPaddingException | IOException e) {
-            //JOptionPane.showMessageDialog(null, "ERROR inesperado.");
-        } catch (InvalidKeyException e) {
-            JOptionPane.showMessageDialog(null, "La llave no es la correcta.");
+        } catch (SQLException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | IOException ignored) {
+
         }
     }
 
@@ -425,12 +362,8 @@ public class HiloTrabajo extends Thread {
             oos.writeObject(cuentasCifradas);
             bos.close();
             oosbytes.close();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "ERROR en la sentencia SQL.");
-        } catch (IllegalBlockSizeException | BadPaddingException | IOException e) {
-            //JOptionPane.showMessageDialog(null, "ERROR inesperado.");
-        } catch (InvalidKeyException e) {
-            JOptionPane.showMessageDialog(null, "La llave no es la correcta.");
+        } catch (SQLException | IOException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ignored) {
+
         }
     }
 }
