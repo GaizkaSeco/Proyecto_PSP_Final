@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HiloTrabajo extends Thread {
     private Socket c = new Socket();
@@ -21,18 +24,21 @@ public class HiloTrabajo extends Thread {
     private SecretKey key;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
-    //private ByteArrayOutputStream bos;
-    //private ObjectOutputStream oosbytes;
+    private Logger logger;
+    private FileHandler fh;
 
-    public HiloTrabajo(Socket c, JTextArea textArea, boolean activo) {
+    public HiloTrabajo(Socket c, JTextArea textArea, boolean activo, Logger logger, FileHandler fh) {
         this.c = c;
         this.textArea = textArea;
         this.activo = activo;
+        this.fh = fh;
+        this.logger = logger;
     }
 
     @Override
     public void run() {
         try {
+            //se conecta el usuario
             textArea.append("\nSe ha conectado un usuario.\n");
             oos = new ObjectOutputStream(c.getOutputStream());
             ois = new ObjectInputStream(c.getInputStream());
@@ -68,7 +74,19 @@ public class HiloTrabajo extends Thread {
                         textArea.append("Ha iniciado una opcion no valida operacion denegada.\n");
                 }
             }
-        } catch (IOException | SQLException | NoSuchAlgorithmException | NoSuchPaddingException | ClassNotFoundException ignored) {
+        } catch (NoSuchPaddingException e) {
+            logger.log(Level.WARNING, "Ha surgido un error inesperado");
+            logger.addHandler(fh);
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Ha surgido un error al realizar una sentenia SQL");
+            logger.addHandler(fh);
+        } catch (NoSuchAlgorithmException e) {
+            logger.log(Level.WARNING, "El algoritmo usado no es correcto");
+            logger.addHandler(fh);
+        } catch (ClassNotFoundException e) {
+            logger.log(Level.WARNING, "No se ha podido realizar el casteo de datos");
+            logger.addHandler(fh);
+        } catch (IOException ignored) {
 
         }
     }
@@ -111,8 +129,20 @@ public class HiloTrabajo extends Thread {
             oos.writeObject(loginCifrado);
             bos.close();
             oosbytes.close();
-        } catch (IOException | ClassNotFoundException | SQLException | InvalidKeyException | BadPaddingException |
-                 IllegalBlockSizeException ignored) {
+        } catch (BadPaddingException | IllegalBlockSizeException e) {
+            logger.log(Level.WARNING, "Ha surgido un error inesperado");
+            logger.addHandler(fh);
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Ha surgido un error al realizar una sentenia SQL");
+            logger.addHandler(fh);
+        } catch (InvalidKeyException e) {
+            logger.log(Level.WARNING, "La clave no es la correcta para poder descifrar");
+            logger.addHandler(fh);
+        } catch (ClassNotFoundException e) {
+            logger.log(Level.WARNING, "No se ha podido realizar el casteo de datos");
+            logger.addHandler(fh);
+        } catch (IOException ignored) {
+
         }
     }
 
@@ -147,8 +177,10 @@ public class HiloTrabajo extends Thread {
                     default:
                         textArea.append(user.getUsuario() + " ha iniciado una opcion no valida operacion denegada.\n");
                 }
-            } catch (IOException | ClassNotFoundException ignored) {
-
+            } catch (IOException ignored) {
+            } catch (ClassNotFoundException e) {
+                logger.log(Level.WARNING, "No se ha podido realizar el casteo de datos");
+                logger.addHandler(fh);
             }
         }
     }
@@ -166,7 +198,16 @@ public class HiloTrabajo extends Thread {
             rsa.update(documento.getBytes());
             byte[] firma = rsa.sign();
             oos.writeObject(firma);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | IOException ignored) {
+        } catch (NoSuchAlgorithmException e) {
+            logger.log(Level.WARNING, "El algoritmo usado no es correcto");
+            logger.addHandler(fh);
+        } catch (SignatureException e) {
+            logger.log(Level.WARNING, "Ha surgido un error inesperado");
+            logger.addHandler(fh);
+        } catch (InvalidKeyException e) {
+            logger.log(Level.WARNING, "La clave no es la correcta para poder descifrar");
+            logger.addHandler(fh);
+        } catch (IOException ignored) {
 
         }
     }
@@ -193,7 +234,16 @@ public class HiloTrabajo extends Thread {
             oos.writeObject(cuentasCifradas);
             bos.close();
             oosbytes.close();
-        } catch (SQLException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | IOException ignored) {
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Ha surgido un error al realizar una sentenia SQL");
+            logger.addHandler(fh);
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            logger.log(Level.WARNING, "Ha surgido un error inesperado");
+            logger.addHandler(fh);
+        } catch (InvalidKeyException e) {
+            logger.log(Level.WARNING, "La clave no es la correcta para poder descifrar");
+            logger.addHandler(fh);
+        } catch (IOException ignored) {
 
         }
     }
@@ -225,8 +275,20 @@ public class HiloTrabajo extends Thread {
             }
             rs.close();
             ps.close();
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | SQLException |
-                 ClassNotFoundException | IOException ignored) {
+        } catch (InvalidKeyException e) {
+            logger.log(Level.WARNING, "La clave no es la correcta para poder descifrar");
+            logger.addHandler(fh);
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Ha surgido un error al realizar una sentenia SQL");
+            logger.addHandler(fh);
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            logger.log(Level.WARNING, "Ha surgido un error inesperado");
+            logger.addHandler(fh);
+        } catch (ClassNotFoundException e) {
+            logger.log(Level.WARNING, "No se ha podido realizar el casteo de datos");
+            logger.addHandler(fh);
+        } catch (IOException ignored) {
+
         }
     }
 
@@ -252,8 +314,20 @@ public class HiloTrabajo extends Thread {
             textArea.append("Creando un nuevo usuario llamado " + registrarse.getUsuario() + ".\n");
             ps.execute();
             ps.close();
-        } catch (IllegalBlockSizeException | SQLException | InvalidKeyException | BadPaddingException | IOException | ClassNotFoundException ignored) {
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            logger.log(Level.WARNING, "Ha surgido un error inesperado");
+            logger.addHandler(fh);
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Ha surgido un error al realizar una sentenia SQL");
+            logger.addHandler(fh);
+        } catch (IOException ignored) {
 
+        } catch (InvalidKeyException e) {
+            logger.log(Level.WARNING, "La clave no es la correcta para poder descifrar");
+            logger.addHandler(fh);
+        } catch (ClassNotFoundException e) {
+            logger.log(Level.WARNING, "No se ha podido realizar el casteo de datos");
+            logger.addHandler(fh);
         }
     }
 
@@ -305,7 +379,19 @@ public class HiloTrabajo extends Thread {
             }
             bis.close();
             oisbytes.close();
-        } catch (BadPaddingException | IllegalBlockSizeException | ClassNotFoundException | InvalidKeyException | SQLException | IOException ignored) {
+        } catch (BadPaddingException | IllegalBlockSizeException e) {
+            logger.log(Level.WARNING, "Ha surgido un error inesperado");
+            logger.addHandler(fh);
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Ha surgido un error al realizar una sentenia SQL");
+            logger.addHandler(fh);
+        } catch (InvalidKeyException e) {
+            logger.log(Level.WARNING, "La clave no es la correcta para poder descifrar");
+            logger.addHandler(fh);
+        } catch (ClassNotFoundException e) {
+            logger.log(Level.WARNING, "No se ha podido realizar el casteo de datos");
+            logger.addHandler(fh);
+        } catch (IOException ignored) {
 
         }
     }
@@ -333,7 +419,16 @@ public class HiloTrabajo extends Thread {
             oos.writeObject(cuentasCifradas);
             bos.close();
             oosbytes.close();
-        } catch (SQLException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | IOException ignored) {
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Ha surgido un error al realizar una sentenia SQL");
+            logger.addHandler(fh);
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            logger.log(Level.WARNING, "Ha surgido un error inesperado");
+            logger.addHandler(fh);
+        } catch (InvalidKeyException e) {
+            logger.log(Level.WARNING, "La clave no es la correcta para poder descifrar");
+            logger.addHandler(fh);
+        } catch (IOException ignored) {
 
         }
     }
@@ -362,7 +457,16 @@ public class HiloTrabajo extends Thread {
             oos.writeObject(cuentasCifradas);
             bos.close();
             oosbytes.close();
-        } catch (SQLException | IOException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ignored) {
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Ha surgido un error al realizar una sentenia SQL");
+            logger.addHandler(fh);
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            logger.log(Level.WARNING, "Ha surgido un error inesperado");
+            logger.addHandler(fh);
+        } catch (InvalidKeyException e) {
+            logger.log(Level.WARNING, "La clave no es la correcta para poder descifrar");
+            logger.addHandler(fh);
+        } catch (IOException ignored) {
 
         }
     }

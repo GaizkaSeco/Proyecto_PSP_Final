@@ -36,8 +36,8 @@ public class VentanaRegistrarse extends javax.swing.JFrame {
 
         try {
             oos.writeObject(3);
-            byte[] firma = (byte[]) ois.readObject();
             PublicKey clavepub = (PublicKey) ois.readObject();
+            byte[] firma = (byte[]) ois.readObject();
             Signature verificarsa = Signature.getInstance("SHA1WITHRSA");
             verificarsa.initVerify(clavepub);
             check = verificarsa.verify(firma);
@@ -46,16 +46,12 @@ public class VentanaRegistrarse extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(null, "El documento firmado no concide.");
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | SignatureException | NoSuchAlgorithmException e) {
+            JOptionPane.showMessageDialog(null, "ERROR inesperado.");
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            JOptionPane.showMessageDialog(null, "No se han podido cargar los datos por que no se pueden castear.");
         } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        } catch (SignatureException e) {
-            throw new RuntimeException(e);
+            JOptionPane.showMessageDialog(null, "La llave que se esta usando no¡ es la correcta.");
         }
     }
 
