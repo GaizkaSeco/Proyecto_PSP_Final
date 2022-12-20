@@ -140,7 +140,7 @@ public class VentanaServidor extends javax.swing.JFrame {
     }//GEN-LAST:event_botonIniciarMousePressed
 
     private void botonDetenerMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonDetenerMousePressed
-        activo = false;
+        //activo = false;
         dispose();
     }//GEN-LAST:event_botonDetenerMousePressed
 

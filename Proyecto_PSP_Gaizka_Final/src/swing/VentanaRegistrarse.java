@@ -37,9 +37,11 @@ public class VentanaRegistrarse extends javax.swing.JFrame {
         try {
             oos.writeObject(3);
             PublicKey clavepub = (PublicKey) ois.readObject();
+            String documento = ois.readObject().toString();
             byte[] firma = (byte[]) ois.readObject();
             Signature verificarsa = Signature.getInstance("SHA1WITHRSA");
             verificarsa.initVerify(clavepub);
+            verificarsa.update(documento.getBytes());
             check = verificarsa.verify(firma);
             if (check) {
                 JOptionPane.showMessageDialog(null, "El documento esta firmado digitalmente correctamente.");
@@ -48,6 +50,7 @@ public class VentanaRegistrarse extends javax.swing.JFrame {
             }
         } catch (IOException | SignatureException | NoSuchAlgorithmException e) {
             JOptionPane.showMessageDialog(null, "ERROR inesperado.");
+            e.printStackTrace();
         } catch (ClassNotFoundException e) {
             JOptionPane.showMessageDialog(null, "No se han podido cargar los datos por que no se pueden castear.");
         } catch (InvalidKeyException e) {

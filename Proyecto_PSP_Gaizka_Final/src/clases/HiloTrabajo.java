@@ -112,7 +112,6 @@ public class HiloTrabajo extends Thread {
             while (rs.next()) {
                 textArea.append("Credenciales correctos.\n");
                 user.setId(rs.getInt(1));
-                System.out.println(user.getId());
                 user.setAcierto(true);
             }
             if (!user.isAcierto()) {
@@ -194,6 +193,7 @@ public class HiloTrabajo extends Thread {
             PublicKey clavepub = par.getPublic();
             oos.writeObject(clavepub);
             String documento = "documento con los terminos.";
+            oos.writeObject(documento);
             Signature rsa = Signature.getInstance("SHA1WITHRSA");
             rsa.initSign(clavepriv);
             rsa.update(documento.getBytes());
